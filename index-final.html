@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Chat</title>
+    <script src='https://cdn.firebase.com/js/client/2.2.7/firebase.js'></script>
+    <style>
+        .msg {
+            margin: 10px 0;
+            padding: 10px;
+            width: 400px;
+            background-color: #efefef;
+        }
+        .me {
+            background-color: #cdcdcd;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <button id="login">Login with Twitter</button>
+    <input id="text" placeholder="Message">
+    <button id="post" disabled="true">Post</button>
+    <div id="results"></div>
+
+    <script>
+        var myFirebase = new Firebase('https://scorching-torch-4380.firebaseio.com/');
+//var myFirebase = new Firebase('https://[PROJECTID].firebaseio.com/');        
+        var username = null;
+
+        var loginButton = document.querySelector('#login');
+        var postButton = document.querySelector('#post');
+        var textInput = document.querySelector('#text');
+
+        loginButton.addEventListener("click", function() {
+          myFirebase.authWithOAuthPopup("twitter", function(error, authData) {
+            if (!error) {
+              username = "@" + authData.twitter.username;
+              postButton.textContent = "Post as " + username;
+              postButton.disabled = false;
+            }
+          }, {remember: "none"}  // will end authentication as soon as the page is closed.
+          );
+        });
+
+        postButton.addEventListener("click", function() {
+          var text = textInput.value.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
+          myFirebase.push({ username:username, text:text });
+          textInput.value = "";
+        });
+
+        myFirebase.onAuth(function(authData) {
+          if ( authData ) { // user has authenticated
+            myFirebase.on('child_added', function(snapshot) {
+              var msg = snapshot.val();
+              var html = '<div class="msg' + (msg.username == username ? ' me' : '') + '">' +
+                       '<b>' + msg.username + '</b>' +
+                       '<p>' + msg.text + '</p>' +
+                     '</div>';
+              document.querySelector("#results").innerHTML += html;
+            });
+          }
+        })
+    </script>
+</body>
+</html>
