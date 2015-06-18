@@ -1,0 +1,9 @@
+{
+  "rules": {
+        ".write": "auth != null",
+        ".read": "auth != null",
+          "$messageID": {
+            "text": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 42" }
+          }
+  }
+}
