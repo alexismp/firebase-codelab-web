@@ -19,12 +19,13 @@
 </head>
 <body>
     <button id="login">Login with Twitter</button>
-    <input id="text" placeholder="Message">
+    <input id="text" type="text" placeholder="Message">
     <button id="post" disabled="true">Post</button>
     <div id="results"></div>
 
     <script>
         var myFirebase = new Firebase('https://scorching-torch-4380.firebaseio.com/');
+//        var myFirebase = new Firebase('https://[PROJECTID].firebaseio.com/');        
         var username = null;
 
         var loginButton = document.querySelector('#login');
@@ -38,7 +39,7 @@
               postButton.textContent = "Post as " + username;
               postButton.disabled = false;
             }
-          }, {remember: "none"}  // will end authentication as soon as the page is closed.
+          }, { remember: "none" }  // will end authentication as soon as the page is closed.
           );
         });
 
@@ -59,7 +60,7 @@
               document.querySelector("#results").innerHTML += html;
             });
           }
-        })
+        });
     </script>
 </body>
 </html>

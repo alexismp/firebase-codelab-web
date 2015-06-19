@@ -19,13 +19,13 @@
 </head>
 <body>
     <button id="login">Login with Twitter</button>
-    <input id="text" placeholder="Message">
+    <input id="text" type="text" placeholder="Message">
     <button id="post" disabled="true">Post</button>
     <div id="results"></div>
 
     <script>
         var myFirebase = new Firebase('https://scorching-torch-4380.firebaseio.com/');
-//var myFirebase = new Firebase('https://[PROJECTID].firebaseio.com/');
+//        var myFirebase = new Firebase('https://[PROJECTID].firebaseio.com/');
         var username = null;
 
         var loginButton = document.querySelector('#login');
@@ -39,30 +39,19 @@
               postButton.textContent = "Post as " + username;
               postButton.disabled = false;
             }
-          }, {remember: "none"}  // will end authentication as soon as the page is closed.
+          }, { remember: "none" }  // will end authentication as soon as the page is closed.
           );
         });
 
-        var key = null;
         postButton.addEventListener("click", function() {
           var text = textInput.value.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
-          key = myFirebase.push({ username:username, text:text },
-            function(error) {
-              if (error) {
-                console.log("Error adding new message:", error);
-              } else {
-                key = null;
-              }
-            }
-          );
+          myFirebase.push({ username:username, text:text });
           textInput.value = "";
         });
 
         myFirebase.onAuth(function(authData) {
           if ( authData ) { // user has authenticated
             myFirebase.on('child_added', function(snapshot) {
-              if (snapshot.key() == key ) return;
-
               var msg = snapshot.val();
               var html = '<div class="msg' + (msg.username == username ? ' me' : '') + '">' +
                        '<b>' + msg.username + '</b>' +
@@ -71,7 +60,7 @@
               document.querySelector("#results").innerHTML += html;
             });
           }
-        })
+        });
     </script>
 </body>
 </html>
